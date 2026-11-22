@@ -18,18 +18,25 @@ function startBot() {
   let yaw = 0;
   let tickCount = 0;
 
+  // Confirms spawn position so the server unlocks head rotation
+  client.on('position', (packet) => {
+    if (packet.teleportId !== undefined) {
+      client.write('teleport_confirm', { teleportId: packet.teleportId });
+    }
+  });
+
   client.on('login', () => {
     console.log('Bot successfully joined blockyharbor726.mcsh.gg and is spinning 360 degrees!');
     
-    // Rotates smoothly 15 degrees every 0.5 seconds (full 360-degree spin every 12 seconds)
+    // Rotates smoothly 15 degrees every 0.5 seconds using 1.21.4 player_rotation packet
     spinTimer = setInterval(() => {
       yaw = (yaw + 15) % 360;
       tickCount++;
 
-      client.write('look', {
+      client.write('player_rotation', {
         yaw: yaw,
         pitch: 0,
-        onGround: true
+        flags: 1
       });
 
       // Swings right arm every 5 seconds while spinning
