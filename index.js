@@ -13,17 +13,15 @@ function startBot() {
     version: false
   });
 
-  // Makes the bot jump and look around every 15 seconds so it acts like a real player
   bot.on('spawn', () => {
     console.log('Bot successfully joined blockyharbor726.mcsh.gg!');
     setInterval(() => {
-      bot.setControlState('jump', true);
-      setTimeout(() => bot.setControlState('jump', false), 500);
-      bot.look(Math.random() * 3, 0);
-    }, 15000);
+      if (bot.entity) {
+        bot.swingArm('right');
+      }
+    }, 20000);
   });
 
-  // Auto-reconnects every 10 seconds if the server is still in queue or restarts
   bot.on('end', () => {
     console.log('Disconnected. Retrying in 10 seconds...');
     setTimeout(startBot, 10000);
@@ -34,4 +32,3 @@ function startBot() {
 }
 
 startBot();
-
