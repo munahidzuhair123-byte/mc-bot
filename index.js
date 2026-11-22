@@ -2,7 +2,7 @@ const mc = require('minecraft-protocol');
 const express = require('express');
 const app = express();
 
-app.get('/', (req, res) => res.send('GuardBot247 is online and active!'));
+app.get('/', (req, res) => res.send('GuardBot247 is online and spinning 360 degrees!'));
 app.listen(3000, () => console.log('Keep-alive web server running on port 3000'));
 
 function startBot() {
@@ -14,20 +14,29 @@ function startBot() {
     auth: 'offline'
   });
 
-  let activityTimer;
+  let spinTimer;
+  let yaw = 0;
+  let tickCount = 0;
 
   client.on('login', () => {
-    console.log('Bot successfully joined blockyharbor726.mcsh.gg and will stay active!');
+    console.log('Bot successfully joined blockyharbor726.mcsh.gg and is spinning 360 degrees!');
     
-    // Sends a silent arm-swing & head-turn packet every 25s (valid numbers, zero NaN kicks)
-    activityTimer = setInterval(() => {
-      client.write('arm_animation', { hand: 0 });
+    // Rotates smoothly 15 degrees every 0.5 seconds (full 360-degree spin every 12 seconds)
+    spinTimer = setInterval(() => {
+      yaw = (yaw + 15) % 360;
+      tickCount++;
+
       client.write('look', {
-        yaw: Math.floor(Math.random() * 180),
+        yaw: yaw,
         pitch: 0,
         onGround: true
       });
-    }, 25000);
+
+      // Swings right arm every 5 seconds while spinning
+      if (tickCount % 10 === 0) {
+        client.write('arm_animation', { hand: 0 });
+      }
+    }, 500);
   });
 
   client.on('kick_disconnect', (packet) => {
@@ -39,7 +48,7 @@ function startBot() {
   });
 
   client.on('end', () => {
-    clearInterval(activityTimer);
+    clearInterval(spinTimer);
     console.log('Connection closed. Retrying in 15 seconds...');
     setTimeout(startBot, 15000);
   });
