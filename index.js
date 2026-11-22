@@ -1,4 +1,4 @@
-const mineflayer = require('mineflayer');
+const mc = require('minecraft-protocol');
 const express = require('express');
 const app = express();
 
@@ -6,29 +6,34 @@ app.get('/', (req, res) => res.send('GuardBot247 is online and watching the serv
 app.listen(3000, () => console.log('Keep-alive web server running on port 3000'));
 
 function startBot() {
-  const bot = mineflayer.createBot({
+  const client = mc.createClient({
     host: 'blockyharbor726.mcsh.gg',
     port: 25565,
     username: 'GuardBot247',
-    version: '1.21.4'
+    version: '1.21.4',
+    auth: 'offline'
   });
 
-  bot.on('spawn', () => {
-    console.log('Bot successfully joined blockyharbor726.mcsh.gg!');
-    setInterval(() => {
-      if (bot.entity) {
-        bot.swingArm('right');
-      }
-    }, 20000);
+  client.on('login', () => {
+    console.log('Bot successfully joined blockyharbor726.mcsh.gg and will stay online!');
   });
 
-  bot.on('end', () => {
-    console.log('Disconnected. Retrying in 10 seconds...');
-    setTimeout(startBot, 10000);
+  client.on('kick_disconnect', (packet) => {
+    console.log('Kicked from server:', packet.reason);
   });
 
-  bot.on('kicked', (reason) => console.log('Kicked from server:', reason));
-  bot.on('error', (err) => console.log('Connection status:', err.message));
+  client.on('disconnect', (packet) => {
+    console.log('Disconnected:', packet.reason);
+  });
+
+  client.on('end', () => {
+    console.log('Connection closed. Retrying in 15 seconds...');
+    setTimeout(startBot, 15000);
+  });
+
+  client.on('error', (err) => {
+    console.log('Connection status:', err.message);
+  });
 }
 
 startBot();
