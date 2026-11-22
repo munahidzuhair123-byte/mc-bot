@@ -10,8 +10,7 @@ function startBot() {
     host: 'blockyharbor726.mcsh.gg',
     port: 25565,
     username: 'GuardBot247',
-    version: false,
-    physicsEnabled: false
+    version: '1.21.4'
   });
 
   bot.on('spawn', () => {
