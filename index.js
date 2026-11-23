@@ -15,16 +15,23 @@ function startBot() {
   });
 
   let swingTimer;
+  let hasSpawned = false;
 
   client.on('position', (packet) => {
     if (packet.teleportId !== undefined) {
       client.write('teleport_confirm', { teleportId: packet.teleportId });
     }
-  });
 
-  // Prints the server's exact response to /register and /login in Render logs
-  client.on('systemChat', (packet) => {
-    console.log('Server says:', JSON.stringify(packet.content));
+    if (!hasSpawned) {
+      hasSpawned = true;
+      setTimeout(() => {
+        client.chat('/register BotPass12345! BotPass12345!');
+      }, 2000);
+
+      setTimeout(() => {
+        client.chat('/login BotPass12345!');
+      }, 4000);
+    }
   });
 
   client.on('login', () => {
@@ -42,40 +49,6 @@ function startBot() {
       particleStatus: 0
     });
 
-    // Sends /register <pass> <confirmPass> after 3s, then /login <pass> after 5s
-    setTimeout(() => {
-      try {
-        client.write('chat_command_signed', {
-          command: 'register BotPass12345! BotPass12345!',
-          timestamp: BigInt(Date.now()),
-          salt: 0n,
-          argumentSignatures: [],
-          messageCount: 0,
-          acknowledged: Buffer.alloc(3)
-        });
-        console.log('Sent /register');
-      } catch (e) {
-        console.log('Register error:', e.message);
-      }
-    }, 3000);
-
-    setTimeout(() => {
-      try {
-        client.write('chat_command_signed', {
-          command: 'login BotPass12345!',
-          timestamp: BigInt(Date.now()),
-          salt: 0n,
-          argumentSignatures: [],
-          messageCount: 0,
-          acknowledged: Buffer.alloc(3)
-        });
-        console.log('Sent /login');
-      } catch (e) {
-        console.log('Login error:', e.message);
-      }
-    }, 5000);
-
-    // Swings right arm every 10 seconds
     swingTimer = setInterval(() => {
       client.write('arm_animation', { hand: 0 });
     }, 10000);
