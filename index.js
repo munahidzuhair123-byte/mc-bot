@@ -22,6 +22,17 @@ function startBot() {
       client.write('teleport_confirm', { teleportId: packet.teleportId });
     }
 
+    // Tell the server the bot accepted its spawn coordinates so commands unlock
+    client.write('position_look', {
+      x: packet.x,
+      y: packet.y,
+      z: packet.z,
+      yaw: packet.yaw || 0,
+      pitch: packet.pitch || 0,
+      onGround: false,
+      flags: { onGround: false, horizontalCollision: false }
+    });
+
     if (!hasSpawned) {
       hasSpawned = true;
       setTimeout(() => {
