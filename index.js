@@ -22,6 +22,11 @@ function startBot() {
     }
   });
 
+  // Prints the server's exact response to /register and /login in Render logs
+  client.on('systemChat', (packet) => {
+    console.log('Server says:', JSON.stringify(packet.content));
+  });
+
   client.on('login', () => {
     console.log('Bot successfully joined blockyharbor726.mcsh.gg!');
 
