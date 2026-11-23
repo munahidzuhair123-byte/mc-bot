@@ -9,7 +9,7 @@ function startBot() {
   const client = mc.createClient({
     host: 'blockyharbor726.mcsh.gg',
     port: 25565,
-    username: 'GuardBot247',
+    username: 'mushahidafkpc',
     version: '1.21.4',
     auth: 'offline'
   });
