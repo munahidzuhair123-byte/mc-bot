@@ -10,38 +10,15 @@ function startBot() {
     host: 'blockyharbor726.mcsh.gg',
     port: 25565,
     username: 'mushahidafkpc',
-    version: '1.21.4',
+    version: '26.1',
     auth: 'offline'
   });
 
   let swingTimer;
-  let hasSpawned = false;
 
   client.on('position', (packet) => {
     if (packet.teleportId !== undefined) {
       client.write('teleport_confirm', { teleportId: packet.teleportId });
-    }
-
-    // Tell the server the bot accepted its spawn coordinates so commands unlock
-    client.write('position_look', {
-      x: packet.x,
-      y: packet.y,
-      z: packet.z,
-      yaw: packet.yaw || 0,
-      pitch: packet.pitch || 0,
-      onGround: false,
-      flags: { onGround: false, horizontalCollision: false }
-    });
-
-    if (!hasSpawned) {
-      hasSpawned = true;
-      setTimeout(() => {
-        client.chat('/register BotPass12345! BotPass12345!');
-      }, 2000);
-
-      setTimeout(() => {
-        client.chat('/login BotPass12345!');
-      }, 4000);
     }
   });
 
@@ -60,6 +37,16 @@ function startBot() {
       particleStatus: 0
     });
 
+    // Sends /register <pass> <confirmPass> after 3s, then /login <pass> after 5s
+    setTimeout(() => {
+      client.chat('/register 12345678 12345678');
+    }, 3000);
+
+    setTimeout(() => {
+      client.chat('/login 12345678');
+    }, 5000);
+
+    // Swings right arm every 10 seconds
     swingTimer = setInterval(() => {
       client.write('arm_animation', { hand: 0 });
     }, 10000);
