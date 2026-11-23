@@ -15,38 +15,43 @@ function startBot() {
   });
 
   let swingTimer;
+  let loggedInSent = false;
 
-  client.on('position', (packet) => {
+  function triggerLogin() {
+    if (loggedInSent) return;
+    loggedInSent = true;
+    setTimeout(() => {
+      try {
+        if (typeof client.chat === 'function') {
+          client.chat('/login 12345678');
+        } else {
+          client.write('chat_command_signed', {
+            command: 'login 12345678',
+            timestamp: BigInt(Date.now()),
+            salt: 0n,
+            argumentSignatures: [],
+            messageCount: 0,
+            acknowledged: Buffer.alloc(3)
+          });
+        }
+        console.log('Login command sent!');
+      } catch (err) {
+        console.log('Login send error:', err.message);
+      }
+    }, 3000);
+  }
+
+  client.on('player_position', (packet) => {
     if (packet.teleportId !== undefined) {
       client.write('teleport_confirm', { teleportId: packet.teleportId });
     }
+    triggerLogin();
   });
 
   client.on('login', () => {
     console.log('Bot successfully joined blockyharbor726.mcsh.gg!');
+    triggerLogin();
 
-    client.write('settings', {
-      locale: 'en_US',
-      viewDistance: 4,
-      chatFlags: 0,
-      chatColors: true,
-      skinParts: 127,
-      mainHand: 1,
-      enableTextFiltering: false,
-      enableServerListing: true,
-      particleStatus: 0
-    });
-
-    // Sends /register <pass> <confirmPass> after 3s, then /login <pass> after 5s
-    setTimeout(() => {
-      client.chat('/register 12345678 12345678');
-    }, 3000);
-
-    setTimeout(() => {
-      client.chat('/login 12345678');
-    }, 5000);
-
-    // Swings right arm every 10 seconds
     swingTimer = setInterval(() => {
       client.write('arm_animation', { hand: 0 });
     }, 10000);
