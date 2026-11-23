@@ -39,11 +39,21 @@ function startBot() {
 
     // Sends /register <pass> <confirmPass> after 3s, then /login <pass> after 5s
     setTimeout(() => {
-      client.write('chat_command', { command: 'register BotPass12345! BotPass12345!' });
+      try {
+        client.write('chat_command', { command: 'register BotPass12345! BotPass12345!' });
+        console.log('Sent /register');
+      } catch (e) {
+        console.log('Register error:', e.message);
+      }
     }, 3000);
 
     setTimeout(() => {
-      client.write('chat_command', { command: 'login BotPass12345!' });
+      try {
+        client.write('chat_command', { command: 'login BotPass12345!' });
+        console.log('Sent /login');
+      } catch (e) {
+        console.log('Login error:', e.message);
+      }
     }, 5000);
 
     // Swings right arm every 10 seconds
