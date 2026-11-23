@@ -40,7 +40,14 @@ function startBot() {
     // Sends /register <pass> <confirmPass> after 3s, then /login <pass> after 5s
     setTimeout(() => {
       try {
-        client.write('chat_command', { command: 'register BotPass12345! BotPass12345!' });
+        client.write('chat_command_signed', {
+          command: 'register BotPass12345! BotPass12345!',
+          timestamp: BigInt(Date.now()),
+          salt: 0n,
+          argumentSignatures: [],
+          messageCount: 0,
+          acknowledged: Buffer.alloc(3)
+        });
         console.log('Sent /register');
       } catch (e) {
         console.log('Register error:', e.message);
@@ -49,7 +56,14 @@ function startBot() {
 
     setTimeout(() => {
       try {
-        client.write('chat_command', { command: 'login BotPass12345!' });
+        client.write('chat_command_signed', {
+          command: 'login BotPass12345!',
+          timestamp: BigInt(Date.now()),
+          salt: 0n,
+          argumentSignatures: [],
+          messageCount: 0,
+          acknowledged: Buffer.alloc(3)
+        });
         console.log('Sent /login');
       } catch (e) {
         console.log('Login error:', e.message);
